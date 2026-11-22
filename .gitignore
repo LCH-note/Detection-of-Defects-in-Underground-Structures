@@ -27,7 +27,6 @@ YOLO segmentation/
 tmp/
 
 # Training and generated outputs
-runs/
 output/
 tmp/
 samples9.png
