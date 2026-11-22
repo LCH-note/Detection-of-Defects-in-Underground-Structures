@@ -2,6 +2,11 @@ from ultralytics import YOLO
 from pathlib import Path
 import cv2
 
+BASE_DIR = Path(__file__).resolve().parents[1]
+
+MODEL_PATH = BASE_DIR / "runs" / "step3" / "weights" / "best.pt"
+MODEL_NANO_PATH = BASE_DIR / "runs" / "step3n" / "weights" / "best.pt"
+MODEL_MEDIUM_PATH = BASE_DIR / "runs" / "step3m" / "weights" / "best.pt"
 
 class_names = [
 "crack",
@@ -12,7 +17,6 @@ class_names = [
 SAVE_DIR = Path("error_cases")
 SAVE_DIR.mkdir(exist_ok=True)
 
-BASE_DIR = Path(__file__).resolve().parents[1]
 TEST_IMAGE_DIR = BASE_DIR / "data" / "images" / "test"
 TEST_LABEL_DIR = BASE_DIR / "data" / "labels" / "test"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
@@ -78,8 +82,7 @@ def error_analysis(model, test_imgs, test_gts, best):
                     )
 
 if __name__ == "__main__":
-    model_path = BASE_DIR / "runs" / "step3" / "weights" / "best.pt"
-    model = YOLO(str(model_path))
+    model = YOLO(str(MODEL_PATH))
 
     # 테스트 이미지 경로
     test_imgs = sorted(

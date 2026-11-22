@@ -7,6 +7,9 @@ import pandas as pd
 
 BASE_DIR = Path(__file__).resolve().parents[1]
 MODEL_PATH = BASE_DIR / "runs" / "step3" / "weights" / "best.pt"
+MODEL_NANO_PATH = BASE_DIR / "runs" / "step3n" / "weights" / "best.pt"
+MODEL_MEDIUM_PATH = BASE_DIR / "runs" / "step3m" / "weights" / "best.pt"
+
 VAL_IMAGE_DIR = BASE_DIR / "data" / "images" / "val"
 VAL_LABEL_DIR = BASE_DIR / "data" / "labels" / "val"
 IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".bmp", ".webp"}
@@ -67,7 +70,7 @@ def onoff(model, paths, gts, thr, cid_target):
         "f1": f1
         }
 
-def explore():
+def explore(path):
     # THRS = [0.001, 0.004, 0.01, 0.02, 0.06, 0.1, 0.2, 0.3]
     THRS = np.arange(0.001, 1.0, 0.001)
     
@@ -80,7 +83,7 @@ def explore():
     best = {}
     all_scores = {}
 
-    model = YOLO(str(MODEL_PATH))
+    model = YOLO(str(path))
 
     # 임계값 탐색에 사용할 검증셋 이미지 경로
     paths = sorted(
@@ -180,18 +183,18 @@ def explore():
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
-    plt.savefig("val_threshold_f1.png", dpi=150)
+    plt.savefig("val_threshold_f1_medium.png", dpi=150)
     plt.show()
 
 
-def pick_best_thr(best):
+def pick_best_thr(best, path):
     class_names = [
         "crack",
         "efflorescence",
         "spall_detach"
         ]
 
-    model = YOLO(str(MODEL_PATH))
+    model = YOLO(str(path))
 
     # 임계값 탐색에 사용할 검증셋 이미지 경로
     test_imgs = sorted(
@@ -246,10 +249,26 @@ def pick_best_thr(best):
     
 
 if __name__ == "__main__":
-    # explore()
-    pick_best_thr({
-        "crack": 0.128,
-        "efflorescence": 0.017,
-        "spall_detach": 0.026
-        })
+    # explore(MODEL_MEDIUM_PATH)
 
+    # YOLOv8s 모델
+    # pick_best_thr({
+    #     "crack": 0.128,
+    #     "efflorescence": 0.017,
+    #     "spall_detach": 0.026
+    #     }, MODEL_PATH)
+
+    # YOLOv8n 모델
+    pick_best_thr({
+        "crack": 0.3,
+        "efflorescence": 0.011,
+        "spall_detach": 0.026
+        }, MODEL_NANO_PATH)
+    
+    # YOLOv8m 모델
+    pick_best_thr({
+        "crack": 0.253,
+        "efflorescence": 0.325,
+        "spall_detach": 0.131
+        }, MODEL_MEDIUM_PATH)
+    
